@@ -66,8 +66,11 @@ export default async function BlogIndexPage() {
                       </p>
                     )}
                   </div>
-                  <span className="hidden text-sm font-medium text-[#92949d] transition-colors group-hover:text-[#292a2e] md:inline">
-                    읽기 →
+                  <span
+                    aria-hidden
+                    className="hidden text-base text-[#92949d] transition-colors group-hover:text-[#292a2e] md:inline"
+                  >
+                    →
                   </span>
                 </Link>
               </li>

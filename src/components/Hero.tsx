@@ -55,9 +55,9 @@ export default function Hero() {
     0.06;
 
   return (
-    <section className="relative flex h-screen min-h-[640px] w-full flex-col overflow-hidden bg-white px-5 pt-60 pb-20 md:px-8 md:pt-72 md:pb-24">
-      <div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center">
-        <h1 className="text-[52px] font-semibold tracking-[-0.01em] leading-[1.2] text-[#292a2e]">
+    <section className="relative flex h-screen min-h-[640px] w-full flex-col overflow-hidden bg-white bg-[url('/hero-bg.svg')] bg-cover bg-center bg-no-repeat px-5 pt-44 pb-20 md:px-8 md:pt-56 md:pb-24">
+      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center text-center">
+        <h1 className="text-[34px] font-semibold tracking-[-0.01em] leading-[1.2] text-[#292a2e] md:text-[52px]">
           {HEADLINE_LINES.map((line, i) => (
             <span key={i} className="block">
               <BlurWords
@@ -76,7 +76,7 @@ export default function Hero() {
             duration: 0.6,
             ease: [0.22, 1, 0.36, 1],
           }}
-          className="mt-8 max-w-2xl break-keep text-[16px] leading-[1.7] text-[#5f616a]"
+          className="mt-6 max-w-2xl break-keep text-sm leading-[1.7] text-[#5f616a] md:mt-8 md:text-[16px]"
         >
           {SUB_COPY}
         </motion.p>
@@ -99,7 +99,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: totalDelay + 0.6, duration: 0.5 }}
-        className="mx-auto w-full max-w-6xl"
+        className="relative z-10 mx-auto w-full max-w-6xl"
       >
         <div className="flex items-start justify-center gap-10 md:gap-16">
           <div className="flex flex-col items-center gap-3 text-center">

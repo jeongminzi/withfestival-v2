@@ -67,12 +67,12 @@
   animation: live-ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
-/* Card shine sweep */
+/* Card shine sweep — sweep once per 5s */
 @keyframes card-shine {
   0% {
     transform: translateX(-110%);
   }
-  55%,
+  30%,
   100% {
     transform: translateX(160%);
   }
@@ -94,9 +94,24 @@
     transparent 72%
   );
   transform: translateX(-110%);
-  animation: card-shine 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: card-shine 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   mix-blend-mode: screen;
   z-index: 1;
+}
+
+/* Tap dim — buttons, links, role=button (scale down + slight darken) */
+button,
+a,
+[role="button"] {
+  transition:
+    transform 0.12s ease,
+    filter 0.12s ease;
+}
+button:not(:disabled):active,
+a:active,
+[role="button"]:active {
+  transform: scale(0.97);
+  filter: brightness(0.94);
 }
 
 /* Blog prose */

@@ -106,7 +106,7 @@ export default function Schedule() {
         </div>
 
         <div className="mt-8">
-          <div className="grid grid-cols-[1fr_120px_88px] items-center gap-3 px-5 pb-3 text-[11px] font-medium uppercase tracking-[0.08em] text-[#92949d] md:grid-cols-[1fr_220px_120px] md:gap-4">
+          <div className="hidden items-center gap-4 px-5 pb-3 text-[11px] font-medium uppercase tracking-[0.08em] text-[#92949d] md:grid md:grid-cols-[1fr_220px_120px]">
             <span>축제</span>
             <span>일정</span>
             <span className="text-right">
@@ -137,23 +137,28 @@ export default function Schedule() {
                   return (
                     <li
                       key={f.id}
-                      className="grid grid-cols-[1fr_120px_88px] items-center gap-3 border-t border-[#36383e1a] px-5 py-4 md:grid-cols-[1fr_220px_120px] md:gap-4"
+                      className="flex flex-col gap-2 border-t border-[#36383e1a] px-5 py-4 md:grid md:grid-cols-[1fr_220px_120px] md:items-center md:gap-4"
                     >
-                      <div className="flex min-w-0 items-center gap-3">
-                        <BoothLogo festival={f} />
-                        <div className="flex min-w-0 flex-col">
-                          <span className="truncate text-sm font-semibold text-[#292a2e] md:text-base">
-                            {f.university} · {f.name}
-                          </span>
-                          <span className="mt-0.5 truncate text-xs text-[#7b7d85] md:text-sm">
-                            {f.location}
-                          </span>
+                      <div className="flex items-start justify-between gap-3 md:items-center">
+                        <div className="flex min-w-0 items-center gap-3">
+                          <BoothLogo festival={f} />
+                          <div className="flex min-w-0 flex-col">
+                            <span className="truncate text-sm font-semibold text-[#292a2e] md:text-base">
+                              {f.university} · {f.name}
+                            </span>
+                            <span className="mt-0.5 truncate text-xs text-[#7b7d85] md:text-sm">
+                              {f.location}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="shrink-0 md:hidden">
+                          <DayBadge label={meta.label} tone={meta.tone} />
                         </div>
                       </div>
-                      <span className="truncate text-sm font-semibold tabular-nums text-[#5f616a]">
+                      <span className="pl-[52px] text-xs font-semibold tabular-nums text-[#5f616a] md:pl-0 md:text-sm">
                         {formatRange(f.startDate, f.endDate)}
                       </span>
-                      <div className="flex justify-end">
+                      <div className="hidden md:flex md:justify-end">
                         <DayBadge label={meta.label} tone={meta.tone} />
                       </div>
                     </li>
