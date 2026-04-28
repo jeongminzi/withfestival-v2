@@ -18,16 +18,18 @@ export default async function BlogIndexPage() {
   const posts = await listPosts();
 
   return (
-    <main className="min-h-screen bg-white pt-32 pb-24 md:pt-40 md:pb-32">
-      <div className="mx-auto w-full max-w-3xl px-5 md:px-8">
-        <header className="mb-14 md:mb-20">
-          <h1 className="text-[40px] font-semibold tracking-[-0.01em] leading-[1.7] text-[#292a2e] md:text-[52px]">
+    <main className="min-h-screen bg-white pt-32 pb-24 md:pt-36 md:pb-32">
+      <div className="mx-auto w-full max-w-5xl px-5 md:px-8">
+        <header className="flex flex-col gap-3">
+          <h1 className="text-[34px] font-semibold leading-[1.25] tracking-[-0.01em] text-[#292a2e] md:text-[44px]">
             Blog
           </h1>
-          <p className="mt-2 text-[15px] text-[#5f616a] md:text-base">
+          <p className="max-w-xl text-sm text-[#5f616a] md:text-base">
             축제랑이 보고, 듣고, 만든 이야기.
           </p>
         </header>
+
+        <div className="mt-10">
 
         {posts.length === 0 ? (
           <p className="text-[15px] text-[#5f616a]">
@@ -72,6 +74,7 @@ export default async function BlogIndexPage() {
             ))}
           </ul>
         )}
+        </div>
       </div>
     </main>
   );

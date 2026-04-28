@@ -1,141 +1,186 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BOOTHS, type Booth } from "@/src/data/ranking";
+import Icon from "./Icon";
+
+type Trend = "up" | "down" | "same";
+
+type RankedBooth = Booth & {
+  rank: number;
+  rankDelta: number;
+  trend: Trend;
+  revenueDelta: number;
+};
 
 function formatKRW(n: number) {
   return n.toLocaleString("ko-KR");
 }
 
+function buildRanked(
+  booths: Booth[],
+  prevRanks: Map<string, number>,
+  prevRevenues: Map<string, number>,
+): RankedBooth[] {
+  const sorted = [...booths].sort((a, b) => b.revenue - a.revenue);
+  return sorted.map((b, idx) => {
+    const rank = idx + 1;
+    const prev = prevRanks.get(b.id) ?? rank;
+    const delta = prev - rank;
+    const trend: Trend = delta > 0 ? "up" : delta < 0 ? "down" : "same";
+    const prevRev = prevRevenues.get(b.id) ?? b.revenue;
+    return {
+      ...b,
+      rank,
+      rankDelta: Math.abs(delta),
+      trend,
+      revenueDelta: b.revenue - prevRev,
+    };
+  });
+}
+
 export default function Ranking() {
-  const [booths, setBooths] = useState<Booth[]>(BOOTHS);
-  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+  const [ranked, setRanked] = useState<RankedBooth[]>(() =>
+    buildRanked(BOOTHS, new Map(), new Map()),
+  );
+  const prevRanksRef = useRef<Map<string, number>>(new Map());
+  const prevRevenuesRef = useRef<Map<string, number>>(new Map());
 
   useEffect(() => {
+    const seedRanks = new Map<string, number>();
+    const seedRevs = new Map<string, number>();
+    ranked.forEach((b) => {
+      seedRanks.set(b.id, b.rank);
+      seedRevs.set(b.id, b.revenue);
+    });
+    prevRanksRef.current = seedRanks;
+    prevRevenuesRef.current = seedRevs;
+
     const tick = () => {
-      setBooths((prev) => {
-        const bumped = prev.map((b) => ({
-          ...b,
-          revenue: b.revenue + Math.floor(Math.random() * 18000) + 2000,
+      setRanked((prev) => {
+        const updated: Booth[] = prev.map((b) => ({
+          id: b.id,
+          name: b.name,
+          university: b.university,
+          affiliation: b.affiliation,
+          color: b.color,
+          abbr: b.abbr,
+          logoExt: b.logoExt,
+          revenue: b.revenue + Math.floor(Math.random() * 16000) + 3000,
         }));
-        return bumped.sort((a, b) => b.revenue - a.revenue);
+        const next = buildRanked(
+          updated,
+          prevRanksRef.current,
+          prevRevenuesRef.current,
+        );
+        const ranks = new Map<string, number>();
+        const revs = new Map<string, number>();
+        next.forEach((b) => {
+          ranks.set(b.id, b.rank);
+          revs.set(b.id, b.revenue);
+        });
+        prevRanksRef.current = ranks;
+        prevRevenuesRef.current = revs;
+        return next;
       });
-      setUpdatedAt(
-        new Date().toLocaleTimeString("ko-KR", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        }),
-      );
     };
-    tick();
-    const id = setInterval(tick, 4000);
+
+    const id = setInterval(tick, 3500);
     return () => clearInterval(id);
   }, []);
 
-  const top3 = booths.slice(0, 3);
-  const others = booths.slice(3);
-  const podium = [
-    { booth: top3[1], rank: 2 },
-    { booth: top3[0], rank: 1 },
-    { booth: top3[2], rank: 3 },
-  ].filter((p) => Boolean(p.booth));
+  const leader = ranked[0];
+  const rest = ranked.slice(1);
 
   return (
-    <section className="relative w-full overflow-hidden bg-white pt-32 pb-24 md:pt-40 md:pb-32">
+    <section className="relative w-full bg-white pt-32 pb-24 md:pt-36 md:pb-32">
       <div className="mx-auto w-full max-w-5xl px-5 md:px-8">
-        <div className="mb-14 text-center">
-          <h1 className="text-[clamp(2rem,4vw,3rem)] font-bold tracking-[-0.01em] text-[#292a2e]">
-            실시간 대학 부스 랭킹
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-xs font-medium tracking-[-0.01em] text-[#5f616a]">
+            <span className="relative inline-flex h-2 w-2">
+              <span className="live-ping absolute inline-flex h-full w-full rounded-full bg-[#ff4d4f]" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#ff4d4f]" />
+            </span>
+            <span>실시간 집계 중</span>
+          </div>
+          <h1 className="text-[34px] font-semibold leading-[1.25] tracking-[-0.01em] text-[#292a2e] md:text-[44px]">
+            오늘의 부스 랭킹
           </h1>
-          <p className="mt-4 text-base text-[#7b7d85] md:text-lg">
-            지금 가장 핫한 대학 부스는?
+          <p className="max-w-xl text-sm text-[#5f616a] md:text-base">
+            지금 이 순간 매출이 가장 활발한 캠퍼스 부스를 자동으로 추적합니다.
           </p>
-          {updatedAt && (
-            <p className="mt-3 text-xs text-[#92949d]">
-              마지막 업데이트 {updatedAt}
-            </p>
-          )}
         </div>
 
-        <div className="mb-14 flex items-end justify-center gap-3 md:gap-6">
-          {podium.map(({ booth, rank }, i) => {
-            const isFirst = rank === 1;
-            const heightClass = isFirst
-              ? "h-52 md:h-64"
-              : rank === 2
-                ? "h-40 md:h-52"
-                : "h-32 md:h-44";
-            const cardBg = isFirst
-              ? "bg-[#ffb60b] border-transparent"
-              : "bg-white border-[#36383e1a]";
-            const subColor = isFirst ? "text-[#292a2e]/70" : "text-[#7b7d85]";
-            return (
-              <motion.div
-                layout
-                key={booth.id}
-                transition={{ type: "spring", stiffness: 280, damping: 28 }}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                style={{ animationDelay: `${i * 0.1}s` }}
-                className="flex flex-1 flex-col items-center"
-              >
-                <div className="mb-3 flex flex-col items-center">
-                  <div
-                    className="mb-2 flex h-12 w-12 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm md:h-14 md:w-14 md:text-sm"
-                    style={{ backgroundColor: booth.color }}
-                  >
-                    {booth.abbr}
-                  </div>
-                  <span className="text-xs font-semibold text-[#5f616a] md:text-sm">
-                    {formatKRW(booth.revenue)}원
+        {leader && (
+          <motion.div
+            layout
+            transition={{ type: "spring", stiffness: 280, damping: 28 }}
+            className="card-shine mt-10 overflow-hidden rounded-3xl bg-[#f7f8fa] p-7 md:p-10"
+          >
+            <div className="relative z-[2] flex items-center gap-2 text-lg font-semibold tracking-[-0.01em]">
+              <Icon
+                name="workspace_premium"
+                size={36}
+                weight={700}
+                filled
+                className="text-[#ffb60b]"
+              />
+              <span className="text-[#b8860b]">1위</span>
+            </div>
+            <div className="relative z-[2] mt-5 flex flex-col gap-7 md:flex-row md:items-start md:justify-between">
+              <div className="flex min-w-0 items-center gap-4">
+                <BoothAvatar booth={leader} size={72} />
+                <div className="flex min-w-0 flex-col">
+                  <span className="text-sm text-[#7b7d85]">
+                    {leader.university} · {leader.affiliation}
+                  </span>
+                  <span className="mt-1.5 truncate text-[36px] font-semibold leading-tight tracking-[-0.02em] text-[#292a2e] md:text-[48px]">
+                    {leader.name}
                   </span>
                 </div>
-
-                <div
-                  className={`flex w-full flex-col items-center justify-start rounded-t-2xl border p-3 shadow-[0_8px_24px_rgba(54,56,62,0.06)] ${heightClass} ${cardBg}`}
+              </div>
+              <div className="flex flex-col items-start md:items-end">
+                <span className="text-sm text-[#7b7d85]">현재 매출</span>
+                <span className="mt-1.5 text-[36px] font-semibold leading-tight tracking-[-0.02em] text-[#292a2e] md:text-[48px]">
+                  {formatKRW(leader.revenue)}원
+                </span>
+                <span
+                  aria-hidden={leader.revenueDelta <= 0}
+                  className="mt-1.5 flex items-center gap-1 text-sm font-medium text-[#b8860b]"
+                  style={{
+                    visibility:
+                      leader.revenueDelta > 0 ? "visible" : "hidden",
+                  }}
                 >
-                  <span className="text-2xl font-black text-[#292a2e] opacity-25 md:text-3xl">
-                    {rank}
-                  </span>
-                  <div className="mt-2 flex flex-col items-center text-center">
-                    <span className="text-sm font-bold leading-tight text-[#292a2e] md:text-base">
-                      {booth.name}
-                    </span>
-                    <span
-                      className={`mt-1 break-keep text-[10px] font-medium md:text-xs ${subColor}`}
-                    >
-                      {booth.university} · {booth.affiliation}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+                  <Icon name="trending_up" size={16} weight={600} />
+                  +{formatKRW(Math.max(leader.revenueDelta, 0))}원
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
-        <div className="mx-auto max-w-2xl">
-          <motion.div layout className="flex flex-col gap-3">
-            {others.map((b, idx) => (
-              <motion.div
+        <div className="mt-10">
+          <div className="grid grid-cols-[40px_1fr_110px_72px] items-center gap-3 px-5 pb-3 text-[11px] font-medium uppercase tracking-[0.08em] text-[#92949d] md:grid-cols-[60px_1fr_180px_96px] md:gap-4">
+            <span>RANK</span>
+            <span>부스</span>
+            <span className="text-right">매출</span>
+            <span className="text-right">변동</span>
+          </div>
+          <motion.ul layout className="flex flex-col">
+            {rest.map((b) => (
+              <motion.li
                 layout
                 key={b.id}
                 transition={{ type: "spring", stiffness: 280, damping: 28 }}
-                className="flex items-center justify-between rounded-2xl border border-[#36383e1a] bg-white px-5 py-4 transition-shadow hover:shadow-[0_8px_24px_rgba(54,56,62,0.06)]"
+                className="grid grid-cols-[40px_1fr_110px_72px] items-center gap-3 border-t border-[#36383e1a] px-5 py-4 md:grid-cols-[60px_1fr_180px_96px] md:gap-4"
               >
-                <div className="flex min-w-0 items-center gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f7f8fa] font-black text-[#92949d]">
-                    {idx + 4}
-                  </div>
-                  <div
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                    style={{ backgroundColor: b.color }}
-                  >
-                    {b.abbr}
-                  </div>
+                <RankIcon rank={b.rank} />
+                <div className="flex min-w-0 items-center gap-3">
+                  <BoothAvatar booth={b} size={40} />
                   <div className="flex min-w-0 flex-col">
-                    <span className="truncate text-sm font-bold text-[#292a2e] md:text-base">
+                    <span className="truncate text-sm font-semibold text-[#292a2e] md:text-base">
                       {b.name}
                     </span>
                     <span className="mt-0.5 truncate text-xs text-[#7b7d85] md:text-sm">
@@ -143,14 +188,101 @@ export default function Ranking() {
                     </span>
                   </div>
                 </div>
-                <span className="ml-3 shrink-0 font-mono text-sm font-bold text-[#292a2e] md:text-base">
-                  {formatKRW(b.revenue)}원
-                </span>
-              </motion.div>
+                <div className="flex flex-col items-end">
+                  <span className="text-sm font-semibold tabular-nums text-[#292a2e] md:text-base">
+                    {formatKRW(b.revenue)}원
+                  </span>
+                  {b.revenueDelta > 0 && (
+                    <span className="mt-0.5 text-[11px] tabular-nums text-[#92949d] md:text-xs">
+                      +{formatKRW(b.revenueDelta)}원
+                    </span>
+                  )}
+                </div>
+                <div className="flex justify-end">
+                  <TrendIndicator trend={b.trend} delta={b.rankDelta} />
+                </div>
+              </motion.li>
             ))}
-          </motion.div>
+          </motion.ul>
         </div>
+
+        <p className="mt-10 text-center text-xs text-[#92949d]">
+          매출 정보는 약 3.5초마다 자동으로 갱신됩니다.
+        </p>
       </div>
     </section>
+  );
+}
+
+function BoothAvatar({ booth, size }: { booth: Booth; size: number }) {
+  const [errored, setErrored] = useState(false);
+  const showLogo = !errored && Boolean(booth.logoExt);
+  return (
+    <div
+      className="relative flex shrink-0 items-center justify-center overflow-hidden rounded-full"
+      style={{
+        width: size,
+        height: size,
+        backgroundColor: showLogo ? "#ffffff" : booth.color,
+        boxShadow: showLogo ? "inset 0 0 0 1px #e7e8eb" : "none",
+      }}
+    >
+      {showLogo ? (
+        <img
+          src={`/logos/${booth.id}.${booth.logoExt}`}
+          alt={booth.university}
+          width={Math.round(size * 0.7)}
+          height={Math.round(size * 0.7)}
+          onError={() => setErrored(true)}
+          style={{ objectFit: "contain" }}
+        />
+      ) : (
+        <span
+          className="font-bold text-white"
+          style={{ fontSize: Math.round(size * 0.3) }}
+        >
+          {booth.abbr}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function RankIcon({ rank }: { rank: number }) {
+  if (rank <= 3) {
+    const color =
+      rank === 1 ? "#ffb60b" : rank === 2 ? "#b8bcc4" : "#cd7f32";
+    return (
+      <span style={{ color }} className="inline-flex">
+        <Icon name="workspace_premium" size={28} weight={700} filled />
+      </span>
+    );
+  }
+  const counterName = rank > 9 ? "counter_9_plus" : `counter_${rank}`;
+  return (
+    <span className="inline-flex text-[#5f616a]">
+      <Icon name={counterName} size={28} weight={500} filled />
+    </span>
+  );
+}
+
+function TrendIndicator({ trend, delta }: { trend: Trend; delta: number }) {
+  if (trend === "same") {
+    return (
+      <span className="flex items-center text-[#c8c9cd]">
+        <Icon name="remove" size={16} weight={500} />
+      </span>
+    );
+  }
+  const isUp = trend === "up";
+  const color = isUp ? "#1f9d55" : "#dc2626";
+  return (
+    <span
+      className="flex items-center gap-0.5 text-xs font-semibold tabular-nums"
+      style={{ color }}
+    >
+      <Icon name={isUp ? "arrow_upward" : "arrow_downward"} size={14} weight={600} />
+      {delta}
+    </span>
   );
 }

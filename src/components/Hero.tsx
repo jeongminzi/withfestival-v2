@@ -57,7 +57,7 @@ export default function Hero() {
   return (
     <section className="relative flex h-screen min-h-[640px] w-full flex-col overflow-hidden bg-white px-5 pt-60 pb-20 md:px-8 md:pt-72 md:pb-24">
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center">
-        <h1 className="text-[52px] font-semibold tracking-[-0.01em] leading-[1.7] text-[#292a2e]">
+        <h1 className="text-[52px] font-semibold tracking-[-0.01em] leading-[1.2] text-[#292a2e]">
           {HEADLINE_LINES.map((line, i) => (
             <span key={i} className="block">
               <BlurWords

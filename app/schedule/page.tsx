@@ -1,3 +1,9 @@
+import Schedule from "@/src/components/Schedule";
+
 export default function SchedulePage() {
-  return <main className="min-h-screen pt-32" />;
+  return (
+    <main className="min-h-screen">
+      <Schedule />
+    </main>
+  );
 }

@@ -6,6 +6,7 @@ export type Booth = {
   revenue: number;
   color: string;
   abbr: string;
+  logoExt?: "svg" | "png";
 };
 
 export const BOOTHS: Booth[] = [
@@ -17,6 +18,7 @@ export const BOOTHS: Booth[] = [
     revenue: 1542000,
     color: "#7B2A47",
     abbr: "광운",
+    logoExt: "svg",
   },
   {
     id: "hanyang",
@@ -26,6 +28,7 @@ export const BOOTHS: Booth[] = [
     revenue: 1410000,
     color: "#0E4DA4",
     abbr: "한양",
+    logoExt: "svg",
   },
   {
     id: "seoultech",
@@ -35,6 +38,7 @@ export const BOOTHS: Booth[] = [
     revenue: 1285000,
     color: "#003876",
     abbr: "과기",
+    logoExt: "png",
   },
   {
     id: "hongik",
@@ -44,6 +48,7 @@ export const BOOTHS: Booth[] = [
     revenue: 1120000,
     color: "#1F4DA0",
     abbr: "홍익",
+    logoExt: "svg",
   },
   {
     id: "korea",
@@ -53,6 +58,7 @@ export const BOOTHS: Booth[] = [
     revenue: 1095000,
     color: "#8C1D40",
     abbr: "고려",
+    logoExt: "svg",
   },
   {
     id: "sogang",
@@ -62,6 +68,7 @@ export const BOOTHS: Booth[] = [
     revenue: 980000,
     color: "#A8001D",
     abbr: "서강",
+    logoExt: "svg",
   },
   {
     id: "snu",
@@ -71,5 +78,6 @@ export const BOOTHS: Booth[] = [
     revenue: 840000,
     color: "#003F7C",
     abbr: "서울",
+    logoExt: "svg",
   },
 ];
