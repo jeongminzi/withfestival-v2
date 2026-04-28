@@ -9,10 +9,12 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Icon from "./Icon";
+import { Button, ButtonLink } from "./ui/Button";
 
 const NAV_ITEMS = [
   { label: "축제랑 소개", href: "/" },
   { label: "축제 일정", href: "/schedule" },
+  { label: "실시간 랭킹", href: "/ranking" },
   { label: "FAQ", href: "/faq" },
   { label: "Blog", href: "/blog" },
 ];
@@ -98,21 +100,25 @@ export default function Navbar() {
           </nav>
 
           <div className="z-10 flex items-center gap-2">
-            <Link
+            <ButtonLink
               href="/contact"
-              className="hidden rounded-full bg-[#292a2e] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#36383e] md:inline-flex"
+              variant="primary"
+              size="sm"
+              className="hidden md:inline-flex"
             >
               도입 문의
-            </Link>
+            </ButtonLink>
 
-            <button
+            <Button
               type="button"
-              className="rounded-full p-2 text-[#292a2e] transition-colors hover:bg-[#36383e0d] md:hidden"
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
               onClick={() => setOpen(!open)}
               aria-label="menu"
             >
               <Icon name={open ? "close" : "menu"} size={22} weight={500} />
-            </button>
+            </Button>
           </div>
         </motion.div>
       </motion.header>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Button } from "./ui/Button";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -9,6 +10,11 @@ const TYPES = ["도입 문의", "가격 문의", "제휴", "기타"] as const;
 export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState<string>("");
+  const [isValid, setIsValid] = useState(false);
+
+  function handleInput(e: FormEvent<HTMLFormElement>) {
+    setIsValid(e.currentTarget.checkValidity());
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,19 +61,28 @@ export default function ContactForm() {
         <p className="mt-3 text-[15px] text-[#5f616a]">
           담당자가 영업일 기준 1~2일 내로 회신드릴게요.
         </p>
-        <button
+        <Button
           type="button"
-          onClick={() => setStatus("idle")}
-          className="mt-8 inline-flex items-center justify-center rounded-full border border-[#36383e33] bg-white px-6 py-3 text-sm font-semibold text-[#292a2e] transition-colors hover:border-[#292a2e]"
+          variant="secondary"
+          size="md"
+          onClick={() => {
+            setIsValid(false);
+            setStatus("idle");
+          }}
+          className="mt-8"
         >
           새 문의 작성
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+    <form
+      onSubmit={handleSubmit}
+      onInput={handleInput}
+      className="flex flex-col gap-5"
+    >
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <Field label="이름" required>
           <input
@@ -132,13 +147,17 @@ export default function ContactForm() {
         </p>
       )}
 
-      <button
+      <Button
         type="submit"
-        disabled={status === "submitting"}
-        className="mt-2 inline-flex items-center justify-center rounded-full bg-[#292a2e] px-7 py-4 text-base font-semibold text-white transition-colors hover:bg-[#36383e] disabled:cursor-not-allowed disabled:opacity-60"
+        variant="primary"
+        size="lg"
+        loading={status === "submitting"}
+        loadingLabel="전송 중"
+        disabled={!isValid}
+        className="mt-2"
       >
-        {status === "submitting" ? "전송 중..." : "문의 보내기"}
-      </button>
+        문의 보내기
+      </Button>
 
       <style jsx>{`
         :global(.form-input) {

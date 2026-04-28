@@ -3,32 +3,37 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import Icon from "./Icon";
+import type { FaqItem } from "@/src/lib/faq";
 
-const FAQS = Array.from({ length: 6 }, (_, i) => ({ id: i }));
-
-export default function Faq() {
+export default function Faq({ items }: { items: FaqItem[] }) {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
 
   return (
     <section className="relative w-full overflow-hidden bg-white pt-32 pb-24 md:pt-40 md:pb-32">
       <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
-          <div>
-            <h2 className="text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-[-0.01em] leading-[1.7] text-[#292a2e] min-h-[1em]">
-              &nbsp;
+          <div className="lg:sticky lg:top-32 lg:self-start">
+            <h2 className="text-[clamp(2.25rem,4.5vw,3.5rem)] font-bold tracking-[-0.01em] leading-[1.2] text-[#292a2e]">
+              자주 묻는 질문
             </h2>
-            <p className="mt-6 max-w-md text-base leading-[1.7] text-[#5f616a] md:text-lg min-h-[1.6em]">
-              {" "}
+            <p className="mt-5 max-w-md text-base leading-[1.7] text-[#7b7d85] md:text-lg">
+              축제랑 도입과 운영에 대해 가장 많이 받는 질문들을 모았어요. 더
+              궁금한 점은 언제든 도입 문의로 알려주세요.
             </p>
           </div>
 
           <div className="flex flex-col">
-            {FAQS.map((faq, idx) => {
+            {items.length === 0 && (
+              <p className="text-sm text-[#92949d]">
+                등록된 FAQ가 없습니다.
+              </p>
+            )}
+            {items.map((item, idx) => {
               const isOpen = openIdx === idx;
-              const isLast = idx === FAQS.length - 1;
+              const isLast = idx === items.length - 1;
               return (
                 <div
-                  key={faq.id}
+                  key={item.slug}
                   className={`${isLast ? "" : "border-b border-[#36383e1a]"}`}
                 >
                   <button
@@ -36,10 +41,10 @@ export default function Faq() {
                     onClick={() => setOpenIdx(isOpen ? null : idx)}
                     className="flex w-full items-center justify-between gap-6 py-5 text-left transition-colors md:py-6"
                   >
-                    <span className="break-keep text-base font-semibold leading-[1.7] text-[#292a2e] md:text-lg min-h-[1em]">
-                      &nbsp;
+                    <span className="break-keep text-base font-semibold leading-[1.7] text-[#292a2e] md:text-lg">
+                      {item.title}
                     </span>
-                    <span className="relative flex h-5 w-5 shrink-0 items-center justify-center text-[#292a2e]">
+                    <span className="relative flex h-5 w-5 shrink-0 items-center justify-center text-[#ffb60b]">
                       <motion.span
                         animate={{
                           rotate: isOpen ? 90 : 0,
@@ -75,11 +80,10 @@ export default function Faq() {
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <div className="pb-6 pr-10">
-                          <p className="break-keep text-sm leading-[1.7] text-[#5f616a] md:text-base min-h-[1.6em]">
-                            {" "}
-                          </p>
-                        </div>
+                        <div
+                          className="prose pb-6 pr-10 text-sm leading-[1.7] text-[#7b7d85] md:text-base"
+                          dangerouslySetInnerHTML={{ __html: item.bodyHtml }}
+                        />
                       </motion.div>
                     )}
                   </AnimatePresence>

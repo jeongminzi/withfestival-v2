@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
 import CountUp from "./CountUp";
+import { Button, ButtonLink } from "./ui/Button";
 
 const HEADLINE_LINES = ["축제랑과 함께", "더 즐거운 축제 경험"];
 
@@ -49,12 +49,6 @@ function BlurWords({
 }
 
 export default function Hero() {
-  const scrollNext = () => {
-    document
-      .getElementById("hero-next")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   const totalDelay =
     (HEADLINE_LINES[0].split(" ").length +
       HEADLINE_LINES[1].split(" ").length) *
@@ -93,19 +87,9 @@ export default function Hero() {
           transition={{ delay: totalDelay + 0.35, duration: 0.5 }}
           className="mt-10 flex flex-col items-center gap-3 sm:flex-row"
         >
-          <Link
-            href="/contact"
-            className="inline-flex items-center justify-center rounded-full bg-[#292a2e] px-7 py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(41,42,46,0.16)] transition-colors hover:bg-[#36383e] md:text-base"
-          >
+          <ButtonLink href="/contact" variant="primary" size="md">
             문의하기
-          </Link>
-          <button
-            type="button"
-            onClick={scrollNext}
-            className="inline-flex items-center justify-center rounded-full border border-[#36383e33] bg-white px-7 py-3.5 text-sm font-semibold text-[#292a2e] transition-colors hover:border-[#292a2e] md:text-base"
-          >
-            더 알아보기
-          </button>
+          </ButtonLink>
         </motion.div>
       </div>
 
