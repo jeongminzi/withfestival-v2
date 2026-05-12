@@ -197,9 +197,6 @@ function MockDepositConfirm() {
         <span className="rounded-xl bg-[#f0f1f3] px-3 py-1.5 text-sm font-semibold text-[#292a2e]">
           테이블 번호 1
         </span>
-        <span className="text-sm text-[#9b9da3]">
-          주문번호 001 · 2026-04-10 17:46
-        </span>
       </div>
 
       <div className="mt-6 flex items-center justify-between text-sm text-[#9b9da3]">
@@ -361,9 +358,6 @@ function MockOrderFlow() {
             <div className="flex items-center justify-between">
               <span className="rounded-xl bg-[#f0f1f3] px-3 py-1.5 text-sm font-semibold text-[#292a2e]">
                 테이블 번호 1
-              </span>
-              <span className="text-sm text-[#9b9da3]">
-                주문번호 001 · 2026-04-10 17:46
               </span>
             </div>
 
